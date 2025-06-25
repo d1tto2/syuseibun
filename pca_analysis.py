@@ -35,3 +35,22 @@ print("R = ", R)
 w, v = np.linalg.eig(R)
 
 print("相関行列の計算と固有値分解が完了しました。")
+
+# --- ここから追記 ---
+# 固有値と固有ベクトルを降順にソート (因子負荷量ブランチと同じコードだが、このブランチにも必要)
+sort_index = np.argsort(w)[::-1]
+sort_w = w[sort_index]
+sort_v = v[:, sort_index]
+
+# 主成分得点の計算 (式: 標準化データ × 固有ベクトル)
+pc_scores = SD @ sort_v
+
+# 主成分得点をDataFrameで分かりやすく表示
+# インデックスには元のDataFrameの区名(df1['区'])を設定
+pc_scores_df = pd.DataFrame(pc_scores, 
+                            index=df1['区'], 
+                            columns=[f'第{i+1}主成分' for i in range(len(sort_w))])
+
+# 計算結果の表示
+print("\n--- 主成分得点 ---")
+print(pc_scores_df)
