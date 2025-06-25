@@ -35,3 +35,34 @@ print("R = ", R)
 w, v = np.linalg.eig(R)
 
 print("相関行列の計算と固有値分解が完了しました。")
+
+# --- ここから追記 ---
+# 固有値と固有ベクトルを降順にソート
+sort_index = np.argsort(w)[::-1]
+sort_w = w[sort_index]
+sort_v = v[:, sort_index]
+print("sort v = ", sort_v)
+
+# 寄与率と累積寄与率の計算
+contribution_rate = sort_w / np.sum(sort_w)
+cumulative_contribution_rate = np.cumsum(contribution_rate)
+
+# 結果をDataFrameで分かりやすく表示
+pca_results = pd.DataFrame({
+    '固有値': sort_w,
+    '寄与率': contribution_rate,
+    '累積寄与率': cumulative_contribution_rate
+})
+pca_results.index = [f'第{i+1}主成分' for i in range(len(sort_w))]
+
+# 因子負荷量の計算
+factor_loadings = sort_v * np.sqrt(sort_w)
+factor_loadings_df = pd.DataFrame(factor_loadings,
+                                  index=variables,
+                                  columns=pca_results.index)
+
+# 計算結果の表示
+print("\n--- 固有値と寄与率 ---")
+print(pca_results)
+print("\n--- 因子負荷量 ---")
+print(factor_loadings_df)
